@@ -52,7 +52,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push Image to Docker Hub
-        run: docker push ${{ env.DST_IMAGE }}
+        run: |
+          echo "Destination Image: ${{ env.DST_IMAGE }}"
+          docker push ${{ env.DST_IMAGE }}
 
       # 可选：清理
       - name: Remove Local Images
