@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # 手动触发此工作流
 
 env:
-  SRC_IMAGE: "ghcr.io/freeman-zt/ffmpeg-builds/base-win32:latest" # 源镜像变量
+  SRC_IMAGE: "ghcr.io/freeman-zt/ffmpeg-builds/win32-gpl-7.0:latest" # 源镜像变量
   DOCKER_HUB_USERNAME: "freeman1983" # Docker Hub用户名变量
   DOCKER_BUILDKIT: 1
 
