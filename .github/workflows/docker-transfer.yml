@@ -19,10 +19,10 @@ jobs:
       - name: Setup Variables
         id: vars
         run: |
-          IFS='/' read -ra ADDR <<< "${{ env.SRC_IMAGE }}"
-          IFS=':' read -ra IMG_TAG <<< "${ADDR[-1]}"
-          echo "::set-output name=image_name::${ADDR[-2]}"
-          echo "::set-output name=tag::${IMG_TAG[0]}"
+          IMAGE_NAME=$(echo "${{ env.SRC_IMAGE }}" | cut -d'/' -f4)
+          TAG=$(echo "${{ env.SRC_IMAGE }}" | cut -d':' -f2)
+          echo "::set-output name=image_name::$IMAGE_NAME"
+          echo "::set-output name=tag::$TAG"
 
       - name: Checkout Code
         uses: actions/checkout@v4
