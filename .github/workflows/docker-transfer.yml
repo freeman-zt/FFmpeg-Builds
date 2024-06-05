@@ -19,11 +19,10 @@ jobs:
       - name: Setup Variables
         id: vars
         run: |
-          SRC_IMAGE_PARTS=(${{ env.SRC_IMAGE //\// }}) # 分割源镜像路径
-          IMAGE_NAME="${{ SRC_IMAGE_PARTS[2] }}" # 提取IMAGE_NAME
-          TAG="${{ SRC_IMAGE_PARTS[3] }}" # 提取TAG
-          echo "::set-output name=image_name::$IMAGE_NAME"
-          echo "::set-output name=tag::$TAG"
+          IFS='/' read -ra ADDR <<< "${{ env.SRC_IMAGE }}"
+          IFS=':' read -ra IMG_TAG <<< "${ADDR[-1]}"
+          echo "::set-output name=image_name::${ADDR[-2]}"
+          echo "::set-output name=tag::${IMG_TAG[0]}"
 
       - name: Checkout Code
         uses: actions/checkout@v4
