@@ -1,0 +1,63 @@
+name: Transfer Docker Image to Docker Hub
+
+on:
+  workflow_dispatch: # 手动触发此工作流
+
+env:
+  SRC_IMAGE: "ghcr.io/freeman-zt/ffmpeg-builds/base-win32:latest" # 源镜像变量
+  DOCKER_HUB_USERNAME: "freeman1983" # Docker Hub用户名变量
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  transfer_image:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read # 读取GitHub Packages权限
+      contents: read # 需要访问仓库内容以获取GitHub Secrets
+
+    steps:
+      - name: Setup Variables
+        id: vars
+        run: |
+          SRC_IMAGE_PARTS=(${{ env.SRC_IMAGE //\// }}) # 分割源镜像路径
+          IMAGE_NAME="${{ SRC_IMAGE_PARTS[2] }}" # 提取IMAGE_NAME
+          TAG="${{ SRC_IMAGE_PARTS[3] }}" # 提取TAG
+          echo "::set-output name=image_name::$IMAGE_NAME"
+          echo "::set-output name=tag::$TAG"
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Packages
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull Image from GitHub Packages
+        run: docker pull ${{ env.SRC_IMAGE }}
+
+      - name: Tag Image for Docker Hub
+        run: |
+          DST_IMAGE="${{ env.DOCKER_HUB_USERNAME }}/${{ steps.vars.outputs.image_name }}:${{ steps.vars.outputs.tag }}"
+          echo "Destination Image: $DST_IMAGE"
+          docker tag ${{ env.SRC_IMAGE }} $DST_IMAGE
+        env:
+          DST_IMAGE: ${{ env.DOCKER_HUB_USERNAME }}/${{ steps.vars.outputs.image_name }}:${{ steps.vars.outputs.tag }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Image to Docker Hub
+        run: docker push ${{ env.DST_IMAGE }}
+
+      # 可选：清理
+      - name: Remove Local Images
+        if: always()
+        run: |
+          docker rmi ${{ env.SRC_IMAGE }}
+          docker rmi ${{ env.DST_IMAGE }}
