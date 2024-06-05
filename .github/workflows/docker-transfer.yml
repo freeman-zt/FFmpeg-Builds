@@ -50,12 +50,12 @@ jobs:
           echo "Destination Image: $DST_IMAGE"
           docker tag ${{ env.SRC_IMAGE }} $DST_IMAGE
           docker push $DST_IMAGE
-        env:
-          DST_IMAGE: ${{ env.DOCKER_HUB_USERNAME }}/${{ steps.vars.outputs.image_name }}
+         
 
       # 可选：清理
       - name: Remove Local Images
         if: always()
         run: |
+          DST_IMAGE: ${{ env.DOCKER_HUB_USERNAME }}/${{ steps.vars.outputs.image_name }}
           docker rmi ${{ env.SRC_IMAGE }}
-          docker rmi ${{ env.DST_IMAGE }}
+          docker rmi $DST_IMAGE
