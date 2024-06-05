@@ -39,7 +39,7 @@ jobs:
 
       - name: Tag Image for Docker Hub
         run: |
-          DST_IMAGE="${{ env.DOCKER_HUB_USERNAME }}/${{ steps.vars.outputs.image_name }}:${{ steps.vars.outputs.tag }}"
+          DST_IMAGE="${{ env.DOCKER_HUB_USERNAME }}/${{ steps.vars.outputs.image_name }}"
           echo "Destination Image: $DST_IMAGE"
           docker tag ${{ env.SRC_IMAGE }} $DST_IMAGE
         env:
