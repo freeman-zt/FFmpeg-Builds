@@ -56,6 +56,5 @@ jobs:
       - name: Remove Local Images
         if: always()
         run: |
-          DST_IMAGE: ${{ env.DOCKER_HUB_USERNAME }}/${{ steps.vars.outputs.image_name }}
           docker rmi ${{ env.SRC_IMAGE }}
-          docker rmi $DST_IMAGE
+        
